@@ -8,4 +8,8 @@ public interface CustomerRepo extends JpaRepository<CustomerDetails,Integer> {
     boolean existsByEmail (String email);
 
     List<CustomerDetails> getByEmail(String email);
+
+    CustomerDetails getByEmailAndVehicleNo(String email, String vehicleNo);
+
+    boolean existsByEmailAndVehicleNo(String email, String vehicleNo);
 }
