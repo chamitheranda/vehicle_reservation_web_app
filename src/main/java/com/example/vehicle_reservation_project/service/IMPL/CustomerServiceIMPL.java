@@ -1,5 +1,6 @@
 package com.example.vehicle_reservation_project.service.IMPL;
 
+import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
 import com.example.vehicle_reservation_project.entity.CustomerDetails;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
@@ -43,5 +44,19 @@ public class CustomerServiceIMPL implements CustomerService {
         );
         customerRepo.save(customerDetails);
         return "Reservation successful";
+    }
+
+    @Override
+    public String deleteFutureReservation(DeleteRequestDTO deleteRequestDTO) {
+        if(customerRepo.existsByEmailAndVehicleNo(deleteRequestDTO.getEmail() , deleteRequestDTO.getVehicleNo())){
+            CustomerDetails record = customerRepo.getByEmailAndVehicleNo(deleteRequestDTO.getEmail() , deleteRequestDTO.getVehicleNo());
+            if(compareDate.isFuture(record.getDate())){
+                customerRepo.delete(record);
+                return "Delete reservation successfully";
+            }
+            return "Service is already done !!" ;
+        }
+
+        return "No vehicle reservation for given email : " + deleteRequestDTO.getEmail() + " and vehicle number : " + deleteRequestDTO.getVehicleNo();
     }
 }
