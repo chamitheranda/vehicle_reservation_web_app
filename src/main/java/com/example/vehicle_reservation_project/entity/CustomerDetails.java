@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "CustomerDetails")
+@Table(name = "customer_details")
 @TypeDefs({
         @TypeDef(name = "json",typeClass = JsonType.class)
 })
@@ -41,7 +41,7 @@ public class CustomerDetails {
     private Date date;
 
     @Column(name = "time" , nullable = false)
-    private LocalTime time;
+    private String time;
 
     @Column(name = "location" , nullable = false , length = 255)
     private String location;
@@ -55,7 +55,7 @@ public class CustomerDetails {
     @Column(name = "message" , nullable = false , length = 255)
     private String message;
 
-    public CustomerDetails(String name, String email, ArrayList contactNumber, Date date, LocalTime time, String location, String vehicleNo, int mileage, String message) {
+    public CustomerDetails(String name, String email, ArrayList contactNumber, Date date, String  time, String location, String vehicleNo, int mileage, String message) {
         this.name = name;
         this.email = email;
         this.contactNumber = contactNumber;
