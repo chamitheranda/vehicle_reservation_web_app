@@ -1,5 +1,6 @@
 package com.example.vehicle_reservation_project.controller;
 
+import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
 import com.example.vehicle_reservation_project.service.CustomerService;
@@ -60,5 +61,18 @@ public class CustomerController {
                                 "data is sunday or old date"
                         ), HttpStatus.BAD_REQUEST);
         }
+
+    @DeleteMapping("delete-future-reservation")
+    public ResponseEntity<StandardResponse> deleteReservation(@RequestBody DeleteRequestDTO deleteRequestDTO){
+        String text = customerService.deleteFutureReservation(deleteRequestDTO);
+        return new ResponseEntity<StandardResponse>(
+                new StandardResponse
+                (
+                        200,
+                        "reservation delete successfully!",
+                        text
+                ), HttpStatus.OK);
+    }
+
 
 }
