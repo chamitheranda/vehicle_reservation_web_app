@@ -20,7 +20,7 @@ public class ReservationRequestDTO {
     private String email;
     private ArrayList contactNumber;
     private Date date;
-    private LocalTime time;
+    private String time;
     private String location;
     private String vehicleNo;
     private int mileage;
