@@ -1,11 +1,13 @@
 package com.example.vehicle_reservation_project.controller;
 
+import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
+import com.example.vehicle_reservation_project.service.CustomerService;
+import com.example.vehicle_reservation_project.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin()
@@ -13,12 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
 
     @Autowired
-    CustomerRepo customerRepo ;
+    CustomerService customerService ;
 
-    @GetMapping("/end")
-    public String display(){
-        String x = "hello";
-        return x ;
+    @PostMapping("/make-reservation")
+    public ResponseEntity<StandardResponse> makeReservation(@RequestBody ReservationRequestDTO reservationRequestDTO){
+        String text = customerService.insertReservationData(reservationRequestDTO);
+        return new ResponseEntity<StandardResponse>(
+                new StandardResponse
+                        (
+                                201,
+                                "reservation successfully!",
+                                text
+                        ), HttpStatus.CREATED);
     }
 
 }
