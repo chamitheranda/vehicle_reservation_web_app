@@ -10,7 +10,7 @@ import org.hibernate.annotations.TypeDefs;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
-import java.sql.Time;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,7 +41,7 @@ public class CustomerDetails {
     private Date date;
 
     @Column(name = "time" , nullable = false)
-    private Time time;
+    private LocalTime time;
 
     @Column(name = "location" , nullable = false , length = 255)
     private String location;
@@ -54,4 +54,16 @@ public class CustomerDetails {
 
     @Column(name = "message" , nullable = false , length = 255)
     private String message;
+
+    public CustomerDetails(String name, String email, ArrayList contactNumber, Date date, LocalTime time, String location, String vehicleNo, int mileage, String message) {
+        this.name = name;
+        this.email = email;
+        this.contactNumber = contactNumber;
+        this.date = date;
+        this.time = time;
+        this.location = location;
+        this.vehicleNo = vehicleNo;
+        this.mileage = mileage;
+        this.message = message;
+    }
 }
