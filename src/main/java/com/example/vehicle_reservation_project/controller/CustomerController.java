@@ -2,16 +2,21 @@ package com.example.vehicle_reservation_project.controller;
 
 import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
+import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
+import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewReservationResponseDTO;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
 import com.example.vehicle_reservation_project.service.CustomerService;
 import com.example.vehicle_reservation_project.util.CompareDate;
 import com.example.vehicle_reservation_project.util.CurrentDateTime;
 import com.example.vehicle_reservation_project.util.StandardResponse;
 import com.example.vehicle_reservation_project.util.SundayOrNot;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin()
@@ -69,10 +74,35 @@ public class CustomerController {
                 new StandardResponse
                 (
                         200,
-                        "reservation delete successfully!",
+                        "",
                         text
                 ), HttpStatus.OK);
     }
+
+    @GetMapping("get-all-reservation")
+    public ResponseEntity<StandardResponse> getAllReservation(@RequestBody ViewAllReservationDTO viewAllReservationDTO) {
+        try {
+            List<ViewReservationResponseDTO> DTOList = customerService.getAllReservationRecords(viewAllReservationDTO);
+            return new ResponseEntity<>(
+                    new StandardResponse(
+                            200,
+                            "Reservations retrieved successfully",
+                            DTOList
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (NotFoundException ex) {
+            return new ResponseEntity<>(
+                    new StandardResponse(
+                            404,
+                            "No reservations found",
+                            null
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
 
 
 }
