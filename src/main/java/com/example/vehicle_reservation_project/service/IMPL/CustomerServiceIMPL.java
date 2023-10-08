@@ -27,24 +27,44 @@ public class CustomerServiceIMPL implements CustomerService {
 
     @Override
     public String insertReservationData(ReservationRequestDTO reservationRequestDTO) {
+        List<CustomerDetails> customers = customerRepo.getByEmail(reservationRequestDTO.getEmail());
         if (customerRepo.existsByEmail(reservationRequestDTO.getEmail())) {
-            List<CustomerDetails> customers = customerRepo.getByEmail(reservationRequestDTO.getEmail());
             for (CustomerDetails x : customers) {
-                if (compareDate.isFuture(x.getDate()) && x.getVehicleNo().equals(reservationRequestDTO.getVehicleNo())) {
+                if (compareDate.isFuture(x.getDate()) && x.getVehicleNo().equals(reservationRequestDTO.getVehicleRegistrationNumber())) {
                         return "There is already a future reservation";
                 }
             }
         }
-
+        if(customerRepo.existsByEmail(reservationRequestDTO.getEmail())){
+            for (CustomerDetails x : customers) {
+                if (compareDate.isFuture(x.getDate()) && !x.getVehicleNo().equals(reservationRequestDTO.getVehicleRegistrationNumber())) {
+                    CustomerDetails customerDetails = new CustomerDetails(
+                            reservationRequestDTO.getUserName(),
+                            reservationRequestDTO.getEmail(),
+                            reservationRequestDTO.getNumber(),
+                            reservationRequestDTO.getReservationDate(),
+                            reservationRequestDTO.getPreferredTime(),
+                            reservationRequestDTO.getPreferredLocation(),
+//                            "Galle",
+                            reservationRequestDTO.getVehicleRegistrationNumber(),
+                            reservationRequestDTO.getCurrentMileage(),
+                            reservationRequestDTO.getMessage()
+                    );
+                    customerRepo.save(customerDetails);
+                    return "Reservation successful";
+                }
+            }
+        }
         CustomerDetails customerDetails = new CustomerDetails(
-                reservationRequestDTO.getName(),
+                reservationRequestDTO.getUserName(),
                 reservationRequestDTO.getEmail(),
-                reservationRequestDTO.getContactNumber(),
-                reservationRequestDTO.getDate(),
-                reservationRequestDTO.getTime(),
-                reservationRequestDTO.getLocation(),
-                reservationRequestDTO.getVehicleNo(),
-                reservationRequestDTO.getMileage(),
+                reservationRequestDTO.getNumber(),
+                reservationRequestDTO.getReservationDate(),
+                reservationRequestDTO.getPreferredTime(),
+                reservationRequestDTO.getPreferredLocation(),
+//                "Galle",
+                reservationRequestDTO.getVehicleRegistrationNumber(),
+                reservationRequestDTO.getCurrentMileage(),
                 reservationRequestDTO.getMessage()
         );
         customerRepo.save(customerDetails);
