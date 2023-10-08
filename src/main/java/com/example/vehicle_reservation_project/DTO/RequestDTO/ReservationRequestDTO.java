@@ -16,13 +16,16 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ReservationRequestDTO {
-    private String name;
-    private String email;
-    private ArrayList contactNumber;
-    private Date date;
-    private String time;
-    private String location;
-    private String vehicleNo;
-    private int mileage;
+
+    private int currentMileage;
+    private String email ;
     private String message;
+    private String number;
+    private String preferredLocation;
+    private String preferredTime;
+    private Date reservationDate;
+    private String userName;
+    private String vehicleRegistrationNumber;
+
+
 }
