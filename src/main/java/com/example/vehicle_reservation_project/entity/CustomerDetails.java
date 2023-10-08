@@ -16,10 +16,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "customer_details")
-@TypeDefs({
-        @TypeDef(name = "json",typeClass = JsonType.class)
-})
+@Table(name = "CustomerDetails")
+
 public class CustomerDetails {
     @Id
     @Column(name = "booking_id", length = 40)
@@ -32,9 +30,8 @@ public class CustomerDetails {
     @Column(name = "email", length = 255, nullable = false)
     private String email;
 
-    @Type(type = "json")
-    @Column(name = "phone", columnDefinition = "json", unique = true)
-    private ArrayList contactNumber;
+    @Column(name = "phone", unique = false , length = 255)
+    private String contactNumber;
 
     @Column(name = "date" , nullable = false)
     @Temporal(TemporalType.DATE)
@@ -43,7 +40,7 @@ public class CustomerDetails {
     @Column(name = "time" , nullable = false)
     private String time;
 
-    @Column(name = "location" , nullable = false , length = 255)
+    @Column(name = "location"  , length = 255)
     private String location;
 
     @Column(name = "vehicle_no" , nullable = false , length = 15)
@@ -55,7 +52,7 @@ public class CustomerDetails {
     @Column(name = "message" , nullable = false , length = 255)
     private String message;
 
-    public CustomerDetails(String name, String email, ArrayList contactNumber, Date date, String  time, String location, String vehicleNo, int mileage, String message) {
+    public CustomerDetails(String name, String email, String contactNumber, Date date, String  time, String location, String vehicleNo, int mileage, String message) {
         this.name = name;
         this.email = email;
         this.contactNumber = contactNumber;
