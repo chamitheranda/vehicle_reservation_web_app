@@ -12,4 +12,8 @@ public interface CustomerRepo extends JpaRepository<CustomerDetails,Integer> {
     CustomerDetails getByEmailAndVehicleNo(String email, String vehicleNo);
 
     boolean existsByEmailAndVehicleNo(String email, String vehicleNo);
+
+    boolean existsByVehicleNo(String vNumber);
+
+    CustomerDetails getByVehicleNo(String vNumber);
 }
