@@ -3,7 +3,7 @@ package com.example.vehicle_reservation_project.service.IMPL;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
-import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewReservationResponseDTO;
+import com.example.vehicle_reservation_project.DTO.ResponseDTO.ViewReservationResponseDTO;
 import com.example.vehicle_reservation_project.entity.CustomerDetails;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
 import com.example.vehicle_reservation_project.service.CustomerService;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -45,7 +44,6 @@ public class CustomerServiceIMPL implements CustomerService {
                             reservationRequestDTO.getReservationDate(),
                             reservationRequestDTO.getPreferredTime(),
                             reservationRequestDTO.getPreferredLocation(),
-//                            "Galle",
                             reservationRequestDTO.getVehicleRegistrationNumber(),
                             reservationRequestDTO.getCurrentMileage(),
                             reservationRequestDTO.getMessage()
@@ -62,7 +60,6 @@ public class CustomerServiceIMPL implements CustomerService {
                 reservationRequestDTO.getReservationDate(),
                 reservationRequestDTO.getPreferredTime(),
                 reservationRequestDTO.getPreferredLocation(),
-//                "Galle",
                 reservationRequestDTO.getVehicleRegistrationNumber(),
                 reservationRequestDTO.getCurrentMileage(),
                 reservationRequestDTO.getMessage()
@@ -72,9 +69,9 @@ public class CustomerServiceIMPL implements CustomerService {
     }
 
     @Override
-    public String deleteFutureReservation(DeleteRequestDTO deleteRequestDTO) {
-        if(customerRepo.existsByEmailAndVehicleNo(deleteRequestDTO.getEmail() , deleteRequestDTO.getVehicleNo())){
-            CustomerDetails record = customerRepo.getByEmailAndVehicleNo(deleteRequestDTO.getEmail() , deleteRequestDTO.getVehicleNo());
+    public String deleteFutureReservation(String vNumber) {
+        if(customerRepo.existsByVehicleNo(vNumber)){
+            CustomerDetails record = customerRepo.getByVehicleNo(vNumber);
             if(compareDate.isFuture(record.getDate())){
                 customerRepo.delete(record);
                 return "Delete reservation successfully";
@@ -82,24 +79,43 @@ public class CustomerServiceIMPL implements CustomerService {
             return "Service is already done !!" ;
         }
 
-        return "No vehicle reservation for given email : " + deleteRequestDTO.getEmail() + " and vehicle number : " + deleteRequestDTO.getVehicleNo();
+        return "No vehicle reservation for vehicle number : " + vNumber;
     }
 
     @Override
-    public List<ViewReservationResponseDTO> getAllReservationRecords(ViewAllReservationDTO viewAllReservationDTO) throws NotFoundException {
+    public List<ViewReservationResponseDTO> getAllReservationRecords(String email) throws NotFoundException {
         List<ViewReservationResponseDTO> DTOList = new ArrayList<>();
-        if(customerRepo.existsByEmail(viewAllReservationDTO.getEmail())){
-            List<CustomerDetails> entityList = customerRepo.getByEmail(viewAllReservationDTO.getEmail());
+        if(customerRepo.existsByEmail(email)){
+            List<CustomerDetails> entityList = customerRepo.getByEmail(email);
             for (CustomerDetails c:entityList) {
                 ViewReservationResponseDTO x = new ViewReservationResponseDTO(
-                        c.getName(),
-                        c.getEmail(),
                         c.getDate(),
                         c.getTime(),
                         c.getVehicleNo(),
                         c.getMileage()
                 );
                 DTOList.add(x);
+            }
+            return DTOList ;
+        }
+        throw new NotFoundException("No reservations");
+    }
+
+    @Override
+    public List<ViewReservationResponseDTO> getFutureReservationRecords(String email) throws NotFoundException {
+        List<ViewReservationResponseDTO> DTOList = new ArrayList<>();
+        if(customerRepo.existsByEmail(email)){
+            List<CustomerDetails> entityList = customerRepo.getByEmail(email);
+            for (CustomerDetails c:entityList) {
+                if(compareDate.isFuture(c.getDate())){
+                    ViewReservationResponseDTO x = new ViewReservationResponseDTO(
+                            c.getDate(),
+                            c.getTime(),
+                            c.getVehicleNo(),
+                            c.getMileage()
+                    );
+                    DTOList.add(x);
+                }
             }
             return DTOList ;
         }
