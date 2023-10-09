@@ -1,4 +1,4 @@
-package com.example.vehicle_reservation_project.DTO.RequestDTO;
+package com.example.vehicle_reservation_project.DTO.ResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
