@@ -3,7 +3,7 @@ package com.example.vehicle_reservation_project.controller;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
-import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewReservationResponseDTO;
+import com.example.vehicle_reservation_project.DTO.ResponseDTO.ViewReservationResponseDTO;
 import com.example.vehicle_reservation_project.service.CustomerService;
 import com.example.vehicle_reservation_project.util.*;
 import javassist.NotFoundException;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin()
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path = "/api/v1/customer")
 public class CustomerController {
 
@@ -84,41 +84,90 @@ public class CustomerController {
 
 
     @DeleteMapping("delete-future-reservation")
-    public ResponseEntity<StandardResponse> deleteReservation(@RequestBody DeleteRequestDTO deleteRequestDTO){
-        String text = customerService.deleteFutureReservation(deleteRequestDTO);
-        return new ResponseEntity<StandardResponse>(
+    public ResponseEntity<StandardResponse> deleteReservation(@RequestParam String vehicleNo, @RequestHeader(value = "Authorization") String authorizationHeader){
+        if(tokenValidationService.validateAccessToken(authorizationHeader)){
+            String text = customerService.deleteFutureReservation(vehicleNo);
+            return new ResponseEntity<StandardResponse>(
+                    new StandardResponse
+                            (
+                                    200,
+                                    "",
+                                    text
+                            ), HttpStatus.OK);
+        }return new ResponseEntity<StandardResponse>(
                 new StandardResponse
-                (
-                        200,
-                        "",
-                        text
-                ), HttpStatus.OK);
+                        (
+                                401,
+                                "Unauthorized Access",
+                                ""
+                        ), HttpStatus.BAD_REQUEST);
+
+
     }
 
     @GetMapping("get-all-reservation")
-    public ResponseEntity<StandardResponse> getAllReservation(@RequestBody ViewAllReservationDTO viewAllReservationDTO) {
-        try {
-            List<ViewReservationResponseDTO> DTOList = customerService.getAllReservationRecords(viewAllReservationDTO);
-            return new ResponseEntity<>(
-                    new StandardResponse(
-                            200,
-                            "Reservations retrieved successfully",
-                            DTOList
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    new StandardResponse(
-                            404,
-                            "No reservations found",
-                            null
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+    public ResponseEntity<StandardResponse> getAllReservation(@RequestParam String email, @RequestHeader(value = "Authorization") String authorizationHeader ) {
+        if(tokenValidationService.validateAccessToken(authorizationHeader)){
+            try {
+                List<ViewReservationResponseDTO> DTOList = customerService.getAllReservationRecords(email);
+                return new ResponseEntity<>(
+                        new StandardResponse(
+                                200,
+                                "Reservations retrieved successfully",
+                                DTOList
+                        ),
+                        HttpStatus.OK
+                );
+            } catch (NotFoundException ex) {
+                return new ResponseEntity<>(
+                        new StandardResponse(
+                                404,
+                                "No reservations found",
+                                null
+                        ),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+        }return new ResponseEntity<StandardResponse>(
+                new StandardResponse
+                        (
+                                401,
+                                "Unauthorized Access",
+                                ""
+                        ), HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("get-future-reservation")
+    public ResponseEntity<StandardResponse> getFutureReservation(@RequestParam String email, @RequestHeader(value = "Authorization") String authorizationHeader ) {
+        if(tokenValidationService.validateAccessToken(authorizationHeader)){
+            try {
+                List<ViewReservationResponseDTO> DTOList = customerService.getFutureReservationRecords(email);
+                return new ResponseEntity<>(
+                        new StandardResponse(
+                                200,
+                                "Future Reservations retrieved successfully",
+                                DTOList
+                        ),
+                        HttpStatus.OK
+                );
+            } catch (NotFoundException ex) {
+                return new ResponseEntity<>(
+                        new StandardResponse(
+                                404,
+                                "No reservations found",
+                                null
+                        ),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+        }return new ResponseEntity<StandardResponse>(
+                new StandardResponse
+                        (
+                                401,
+                                "Unauthorized Access",
+                                ""
+                        ), HttpStatus.BAD_REQUEST);
+    }
 
 
 }
