@@ -16,8 +16,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ViewReservationResponseDTO {
-    private String name;
-    private String email;
     private Date date;
     private String time;
     private String vehicleNo;
