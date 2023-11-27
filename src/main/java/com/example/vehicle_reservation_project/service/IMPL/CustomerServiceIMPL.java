@@ -68,11 +68,14 @@ public class CustomerServiceIMPL implements CustomerService {
     @Override
     public String deleteFutureReservation(String vNumber) {
         if(customerRepo.existsByVehicleNo(vNumber)){
-            CustomerDetails record = customerRepo.getByVehicleNo(vNumber);
-            if(compareDate.isFuture(record.getDate())){
-                customerRepo.delete(record);
-                return "Delete reservation successfully";
+            List<CustomerDetails> records = customerRepo.getAllByVehicleNo(vNumber);
+            for (CustomerDetails c : records) {
+                if(compareDate.isFuture(c.getDate())){
+                    customerRepo.delete(c);
+                    return "Delete reservation successfully";
+                }
             }
+
             return "Service is already done !!" ;
         }
 
