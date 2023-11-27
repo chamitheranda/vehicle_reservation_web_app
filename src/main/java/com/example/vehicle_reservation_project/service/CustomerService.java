@@ -5,12 +5,13 @@ import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequest
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
 import com.example.vehicle_reservation_project.DTO.ResponseDTO.ViewReservationResponseDTO;
 import javassist.NotFoundException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    String insertReservationData(ReservationRequestDTO reservationRequestDTO);
+    HttpStatus insertReservationData(ReservationRequestDTO reservationRequestDTO);
 
     String deleteFutureReservation(String vNumber);
 
