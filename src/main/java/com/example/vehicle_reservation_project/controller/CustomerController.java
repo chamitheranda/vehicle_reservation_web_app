@@ -1,8 +1,5 @@
 package com.example.vehicle_reservation_project.controller;
-
-import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
-import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
 import com.example.vehicle_reservation_project.DTO.ResponseDTO.ViewReservationResponseDTO;
 import com.example.vehicle_reservation_project.service.CustomerService;
 import com.example.vehicle_reservation_project.util.*;
@@ -11,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000" , allowCredentials = "true" ,  methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*")
 @RequestMapping(path = "/api/v1/customer")
 public class CustomerController {
 
@@ -37,49 +33,47 @@ public class CustomerController {
 
 
     @PostMapping("/make-reservation")
-    public ResponseEntity<StandardResponse> makeReservation(@RequestBody ReservationRequestDTO reservationRequestDTO , @RequestHeader(value = "Authorization") String authorizationHeader ){
-        System.out.println("test");
-        if(tokenValidationService.validateAccessToken(authorizationHeader)){
-            System.out.println("test1");
-            String time1 = reservationRequestDTO.getPreferredTime();
-            int time = Integer.parseInt(time1);
-            if(!sundayOrNot.isSunday(reservationRequestDTO.getReservationDate()) && compareDate.isFuture(reservationRequestDTO.getReservationDate())){
-                if(time == 10 | time == 11 | time == 12){
-                    String text = customerService.insertReservationData(reservationRequestDTO);
-                    System.out.println("in the controller class");
-                    return new ResponseEntity<StandardResponse>(
-                            new StandardResponse
-                                    (
-                                            201,
-                                            "reservation successfully!",
-                                            text
-                                    ), HttpStatus.CREATED);
-                }
-                return new ResponseEntity<StandardResponse>(
-                        new StandardResponse
-                                (
-                                        400,
-                                        "reservation failed!",
-                                        "time is not 10,11,12"
-                                ), HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<StandardResponse>(
-                    new StandardResponse
-                            (
-                                    400,
-                                    "reservation failed!",
-                                    "data is sunday or old date"
-                            ), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<StandardResponse>(
-                new StandardResponse
-                        (
-                                401,
-                                "Unauthorized Access",
-                                ""
-                        ), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<StandardResponse> makeReservation(
+            @RequestBody ReservationRequestDTO reservationRequestDTO,
+            @RequestHeader(value = "Authorization") String authorizationHeader){
 
+
+        try {
+                if (tokenValidationService.validateAccessToken(authorizationHeader)) {
+                    HttpStatus msg = customerService.insertReservationData(reservationRequestDTO);
+                    if(msg == HttpStatus.OK){
+                        return new ResponseEntity<>(
+                                new StandardResponse(
+                                        201,
+                                        "Reservation successfully!",
+                                        msg
+                                ), HttpStatus.CREATED);
+                    }else{
+                        return new ResponseEntity<>(
+                                new StandardResponse(
+                                        208,
+                                        "Reservation successfully!",
+                                        msg
+                                ), HttpStatus.ALREADY_REPORTED);
+                    }
+                } else {
+                    return new ResponseEntity<>(
+                            new StandardResponse(
+                                    401,
+                                    "Unauthorized Access",
+                                    ""
+                            ), HttpStatus.UNAUTHORIZED);
+                }
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new StandardResponse(
+                            500,
+                            "Internal Server Error",
+                            "An unexpected error occurred"
+                    ), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
 
 
