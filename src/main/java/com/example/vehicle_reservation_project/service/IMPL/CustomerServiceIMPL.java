@@ -1,8 +1,5 @@
 package com.example.vehicle_reservation_project.service.IMPL;
-
-import com.example.vehicle_reservation_project.DTO.RequestDTO.DeleteRequestDTO;
 import com.example.vehicle_reservation_project.DTO.RequestDTO.ReservationRequestDTO;
-import com.example.vehicle_reservation_project.DTO.RequestDTO.ViewAllReservationDTO;
 import com.example.vehicle_reservation_project.DTO.ResponseDTO.ViewReservationResponseDTO;
 import com.example.vehicle_reservation_project.entity.CustomerDetails;
 import com.example.vehicle_reservation_project.repo.CustomerRepo;
@@ -10,8 +7,8 @@ import com.example.vehicle_reservation_project.service.CustomerService;
 import com.example.vehicle_reservation_project.util.CompareDate;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +22,12 @@ public class CustomerServiceIMPL implements CustomerService {
     private CompareDate compareDate;
 
     @Override
-    public String insertReservationData(ReservationRequestDTO reservationRequestDTO) {
+    public HttpStatus insertReservationData(ReservationRequestDTO reservationRequestDTO) {
         List<CustomerDetails> customers = customerRepo.getByEmail(reservationRequestDTO.getEmail());
         if (customerRepo.existsByEmail(reservationRequestDTO.getEmail())) {
             for (CustomerDetails x : customers) {
                 if (compareDate.isFuture(x.getDate()) && x.getVehicleNo().equals(reservationRequestDTO.getVehicleRegistrationNumber())) {
-                        return "There is already a future reservation";
+                        return HttpStatus.ALREADY_REPORTED;
                 }
             }
         }
@@ -49,7 +46,7 @@ public class CustomerServiceIMPL implements CustomerService {
                             reservationRequestDTO.getMessage()
                     );
                     customerRepo.save(customerDetails);
-                    return "Reservation successful";
+                    return HttpStatus.OK;
                 }
             }
         }
@@ -65,7 +62,7 @@ public class CustomerServiceIMPL implements CustomerService {
                 reservationRequestDTO.getMessage()
         );
         customerRepo.save(customerDetails);
-        return "Reservation successful";
+        return HttpStatus.OK ;
     }
 
     @Override
